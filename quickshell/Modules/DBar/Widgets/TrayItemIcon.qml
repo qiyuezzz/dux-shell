@@ -10,7 +10,10 @@ Item {
     property var tray: null
     property var trayItem: null
     property string source: ""
-    property real iconSize: tray ? tray.trayIconSize : 16
+    readonly property string customIcon: tray ? tray.iconOverrideFor(trayItem) : ""
+    readonly property bool fileIcon: customIcon.startsWith("file://")
+    readonly property bool symbolIcon: customIcon !== "" && !fileIcon
+    property real iconSize: tray ? tray.iconSizeFor(trayItem) : Theme.iconSizeSmall
     property bool iconTintEnabled: tray ? tray.trayIconTintEnabled : false
     property real iconSaturation: tray ? tray.trayIconSaturation : 0
     property real iconColorization: tray ? tray.trayIconColorization : 0
@@ -20,17 +23,30 @@ Item {
     property string fallbackSource: ""
 
     onSourceChanged: fallbackSource = ""
+    onCustomIconChanged: fallbackSource = ""
+
+    DIcon {
+        anchors.centerIn: parent
+        visible: root.symbolIcon
+        name: root.customIcon
+        size: root.iconSize
+        color: root.iconTintEnabled ? root.iconTintColor : root.fallbackTextColor
+    }
 
     IconImage {
         id: iconImg
         anchors.centerIn: parent
         width: root.iconSize
         height: root.iconSize
-        source: root.fallbackSource || root.source
+        source: root.fallbackSource || (root.fileIcon ? root.customIcon : root.source)
         asynchronous: true
         onStatusChanged: {
             if (status !== Image.Error || root.fallbackSource)
                 return;
+            if (root.fileIcon) {
+                root.fallbackSource = root.source;
+                return;
+            }
             const requested = root.source;
             TrayMenuManager.resolveIconFallback(root.trayItem?.icon, url => {
                 if (root.source !== requested)
@@ -40,7 +56,7 @@ Item {
         }
         smooth: true
         mipmap: true
-        visible: status === Image.Ready
+        visible: !root.symbolIcon && status === Image.Ready
         layer.enabled: root.iconTintEnabled
         layer.effect: MultiEffect {
             saturation: root.iconSaturation
@@ -51,7 +67,7 @@ Item {
 
     StyledText {
         anchors.centerIn: parent
-        visible: !iconImg.visible
+        visible: !root.symbolIcon && !iconImg.visible
         text: {
             const itemId = root.trayItem?.id || "";
             if (!itemId)

@@ -42,6 +42,7 @@ var componentNames = {
     "spacer": "spacerComponent",
     "separator": "separatorComponent",
     "network_speed_monitor": "networkComponent",
+    "inputMethod": "inputMethodComponent",
     "keyboard_layout_name": "keyboardLayoutNameComponent",
     "vpn": "vpnComponent",
     "notepadButton": "notepadButtonComponent",

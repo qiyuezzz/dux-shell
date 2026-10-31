@@ -159,6 +159,7 @@ Item {
             separatorComponent,
             networkComponent,
             keyboardLayoutNameComponent,
+            inputMethodComponent,
             vpnComponent,
             notepadButtonComponent,
             colorPickerComponent,
@@ -910,6 +911,12 @@ Item {
                 opacity: 0.3
             }
         }
+    }
+
+    Component {
+        id: inputMethodComponent
+
+        InputMethod {}
     }
 
     Component {

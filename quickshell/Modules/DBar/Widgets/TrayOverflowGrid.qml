@@ -72,9 +72,7 @@ Grid {
                 style: root.bar ? BarMetrics.widgetStyle(root.bar.barConfig) : "pills"
                 pressed: itemArea.pressed
                 radiusOverride: root.bar ? -1 : Theme.fullRadius(width, height)
-                color: itemArea.pressed
-                    ? Theme.withAlpha(root.bar ? Theme.onSurface : Theme.surfaceText, Theme.stateLayerPressed)
-                    : (itemArea.containsMouse ? (root.bar ? Theme.withAlpha(Theme.onSurface, Theme.stateLayerHover) : Theme.surfaceTextHover) : "transparent")
+                color: itemArea.pressed ? Theme.withAlpha(root.bar ? Theme.onSurface : Theme.surfaceText, Theme.stateLayerPressed) : (itemArea.containsMouse ? (root.bar ? Theme.withAlpha(Theme.onSurface, Theme.stateLayerHover) : Theme.surfaceTextHover) : "transparent")
                 border.width: popupDragHandler.dragging ? Theme.outlineWidthFocused : 0
                 border.color: Theme.primary
                 opacity: popupDragHandler.dragging ? 0.8 : 1.0
@@ -101,7 +99,7 @@ Grid {
                 tray: root.bar
                 trayItem: overflowItemRoot.trayItem
                 source: overflowItemRoot.iconSource
-                iconSize: root.effectiveIconSize
+                iconSize: root.bar ? root.bar.iconSizeFor(overflowItemRoot.trayItem) : root.effectiveIconSize
                 fallbackTextColor: root.bar ? (root.bar.trayTextColor ?? Theme.widgetTextColor) : Theme.surfaceTextSecondary
             }
 

@@ -200,6 +200,13 @@ Singleton {
             "section": "right"
         },
         {
+            "id": "inputMethod",
+            "text": I18n.tr("Input Method"),
+            "description": I18n.tr("Display and toggle Chinese / English input with Fcitx5"),
+            "icon": "keyboard",
+            "section": "right"
+        },
+        {
             "id": "keyboard_layout_name",
             "text": I18n.tr("Keyboard layout"),
             "description": I18n.tr("Displays the active keyboard layout and allows switching"),

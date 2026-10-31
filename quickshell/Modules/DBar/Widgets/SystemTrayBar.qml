@@ -102,21 +102,8 @@ BasePill {
         TrayMenuManager.callContextMenuFallback(trayItemId, globalX, globalY);
     }
 
-    property int _trayOrderTrigger: 0
-
-    Connections {
-        target: SessionData
-        function onTrayItemOrderChanged() {
-            root._trayOrderTrigger++;
-        }
-    }
-
-    function sortByPreferredOrder(items, trigger) {
-        void trigger;
-        return TrayMenuManager.sortByPreferredOrder(items, SessionData.trayItemOrder);
-    }
-
-    readonly property var allSortedTrayItems: sortByPreferredOrder(allTrayItems, _trayOrderTrigger)
+    readonly property list<string> trayOrder: SessionData.trayItemOrder
+    readonly property var allSortedTrayItems: TrayMenuManager.sortByPreferredOrder(allTrayItems, trayOrder)
     readonly property var allSortedTrayItemKeys: allSortedTrayItems.map(item => getTrayItemKey(item))
     readonly property var visibleSortedTrayItems: allSortedTrayItems.filter(item => !root.isTrayIdHidden(root.getTrayItemKey(item)))
     readonly property int automaticVisibleItemLimit: {
@@ -351,8 +338,20 @@ BasePill {
         }
     }
 
+    readonly property var trayIconOverrides: SettingsData.widgetOption("systemTray", widgetData, "trayIconOverrides") ?? ({})
+    readonly property var trayIconScales: SettingsData.widgetOption("systemTray", widgetData, "trayIconScales") ?? ({})
     readonly property real trayIconSize: Theme.barIconSize(root.barThickness, undefined, root.barConfig?.maximizeWidgetIcons, root.barConfig?.iconScale)
-    readonly property real trayItemSize: trayIconSize + Theme.spacingXS + Theme.spacingXXS
+    readonly property real trayItemSize: Math.min(widgetThickness, Math.max(trayIconSize, ...allTrayItems.map(item => iconSizeFor(item))) + Theme.spacingXS + Theme.spacingXXS)
+
+    function iconOverrideFor(item) {
+        return trayIconOverrides[getTrayItemKey(item)] ?? "";
+    }
+
+    function iconSizeFor(item) {
+        const configured = Number(trayIconScales[getTrayItemKey(item)] ?? 100);
+        const scale = Number.isFinite(configured) ? Math.max(50, Math.min(200, configured)) / 100 : 1;
+        return Math.min(Math.max(0, widgetThickness), trayIconSize * scale);
+    }
 
     readonly property string autoBarShadowDirection: {
         const edge = root.axis?.edge;

@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Widgets
 import qs.Common
 import qs.DCommon.Widgets
 
@@ -9,6 +10,7 @@ SettingsRow {
     required property int index
     property bool reorderEnabled: true
     property string textIcon: ""
+    property string imageSource: ""
     readonly property bool dragging: reorderList.draggingIndex === index
     readonly property int position: reorderList.order.indexOf(index)
 
@@ -54,6 +56,13 @@ SettingsRow {
             onFinished: root.reorderList.finish()
             onDragCanceled: root.reorderList.cancel()
             onMoveRequested: delta => root.reorderList.move(root.index, delta)
+        },
+        IconImage {
+            anchors.verticalCenter: parent.verticalCenter
+            visible: root.imageSource !== ""
+            source: root.imageSource
+            implicitSize: Theme.iconSize
+            asynchronous: true
         },
         StyledText {
             anchors.verticalCenter: parent.verticalCenter
